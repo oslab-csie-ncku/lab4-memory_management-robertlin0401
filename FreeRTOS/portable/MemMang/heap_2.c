@@ -34,7 +34,9 @@
  * See heap_1.c, heap_3.c and heap_4.c for alternative implementations, and the
  * memory management pages of http://www.FreeRTOS.org for more information.
  */
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
 all the API functions to use the MPU wrappers.  That should only be done when
@@ -120,6 +122,9 @@ void *pvPortMalloc( size_t xWantedSize )
 BlockLink_t *pxBlock, *pxPreviousBlock, *pxNewBlockLink;
 static BaseType_t xHeapHasBeenInitialised = pdFALSE;
 void *pvReturn = NULL;
+size_t BlockSize, WantedSize;
+char data[80];
+WantedSize = xWantedSize;
 
 	vTaskSuspendAll();
 	{
@@ -203,6 +208,10 @@ void *pvReturn = NULL;
 	}
 	#endif
 
+    BlockSize = xWantedSize;
+    sprintf(data, "pvReturn: %p | heapSTRUCT_SIZE: %0d | WantedSize: %3d | BlockSize: %3d\n\r", pvReturn, heapSTRUCT_SIZE, WantedSize, BlockSize);
+	HAL_UART_Transmit(&huart2, (uint8_t *)data, strlen(data), 0xffff);
+
 	return pvReturn;
 }
 /*-----------------------------------------------------------*/
@@ -270,3 +279,8 @@ uint8_t *pucAlignedHeap;
 	pxFirstFreeBlock->pxNextFreeBlock = &xEnd;
 }
 /*-----------------------------------------------------------*/
+
+void vPrintFreeList(void)
+{
+    
+}

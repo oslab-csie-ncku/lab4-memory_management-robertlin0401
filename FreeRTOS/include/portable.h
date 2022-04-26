@@ -179,3 +179,4 @@ void vPortEndScheduler( void ) PRIVILEGED_FUNCTION;
 
 #endif /* PORTABLE_H */
 
+void vPrintFreeList(void) PRIVILEGED_FUNCTION;
