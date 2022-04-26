@@ -299,4 +299,22 @@ void vPrintFreeList(void)
      * > sprintf(data, "%p         %d           %4d         %p\n\r", ...);
      * > sprintf(data, "configADJUSTED_HEAP_SIZE: %0d xFreeBytesRemaining: %0d\n\r", ...);
      */
+    char data[100];
+	BlockLink_t *current = &xStart;
+    current = current->pxNextFreeBlock;
+
+	sprintf(data, "StartAddress heapSTRUCT_SIZE xBlockSize EndAddress\n\r");
+	HAL_UART_Transmit(&huart2, (uint8_t *)data, strlen(data), 0xffff);
+
+	if(current == NULL)
+		return;
+
+	while(current->pxNextFreeBlock != NULL) {
+		sprintf(data, "%p         %d           %4d         %p\n\r", (void *)current, heapSTRUCT_SIZE, current->xBlockSize, (void *)current + current->xBlockSize);
+		HAL_UART_Transmit(&huart2, (uint8_t *)data, strlen(data), 0xffff);
+		current = current->pxNextFreeBlock;
+	}
+
+	sprintf(data, "configADJUSTED_HEAP_SIZE: %0d xFreeBytesRemaining: %0d\n\r", configADJUSTED_HEAP_SIZE, xFreeBytesRemaining);
+    HAL_UART_Transmit(&huart2, (uint8_t *)data, strlen(data), 0xffff);
 }
