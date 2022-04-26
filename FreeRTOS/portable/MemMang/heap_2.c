@@ -98,10 +98,20 @@ static size_t xFreeBytesRemaining = configADJUSTED_HEAP_SIZE;
  */
 #define prvInsertBlockIntoFreeList( pxBlockToInsert )								\
 {																					\
-BlockLink_t *pxIterator;															\
+BlockLink_t *pxIterator, *pxPrevious, *pxBlock;		    				            \
 size_t xBlockSize;																	\
+pxBlock = pxBlockToInsert;                                                          \
 																					\
-	xBlockSize = pxBlockToInsert->xBlockSize;										\
+    /* TODO: Merge free blocks                                                    */\
+    /*                                                                            */\
+    /* HINT                                                                       */\
+    /* 1. You may need to use the `pxPrevious` pointer to keep trace of the       */\
+    /*    previous block.                                                         */\
+    /* 2. Because it is a macro, use `pxBlock` instead of `pxBlockToInsert`       */\
+    /*    below, or you may encounter a problem.                                  */\
+    /*                                                                            */\
+                                                                                    \
+	xBlockSize = pxBlock->xBlockSize;										        \
 																					\
 	/* Iterate through the list until a block is found that has a larger size */	\
 	/* than the block we are inserting. */											\
@@ -112,9 +122,9 @@ size_t xBlockSize;																	\
 																					\
 	/* Update the list to include the block being inserted in the correct */		\
 	/* position. */																	\
-	pxBlockToInsert->pxNextFreeBlock = pxIterator->pxNextFreeBlock;					\
-	pxIterator->pxNextFreeBlock = pxBlockToInsert;									\
-}
+	pxBlock->pxNextFreeBlock = pxIterator->pxNextFreeBlock;					        \
+	pxIterator->pxNextFreeBlock = pxBlock;									        \
+}                                                                                   \
 /*-----------------------------------------------------------*/
 
 void *pvPortMalloc( size_t xWantedSize )
@@ -282,5 +292,11 @@ uint8_t *pucAlignedHeap;
 
 void vPrintFreeList(void)
 {
-    
+    /* TODO: implement this function
+     *
+     * Reference format
+     * > sprintf(data, "StartAddress heapSTRUCT_SIZE xBlockSize EndAddress\n\r");
+     * > sprintf(data, "%p         %d           %4d         %p\n\r", ...);
+     * > sprintf(data, "configADJUSTED_HEAP_SIZE: %0d xFreeBytesRemaining: %0d\n\r", ...);
+     */
 }
