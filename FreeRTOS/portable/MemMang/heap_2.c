@@ -110,6 +110,25 @@ pxBlock = pxBlockToInsert;                                                      
     /* 2. Because it is a macro, use `pxBlock` instead of `pxBlockToInsert`       */\
     /*    below, or you may encounter a problem.                                  */\
     /*                                                                            */\
+    pxPrevious = &xStart;                                                           \
+    pxIterator = (&xStart)->pxNextFreeBlock;                                        \
+	while (pxIterator != &xEnd) {                                                   \
+		if ((uint8_t *)pxIterator == (uint8_t *)pxBlock + pxBlock->xBlockSize) {    \
+			pxBlock->xBlockSize += pxIterator->xBlockSize;                          \
+            pxPrevious->pxNextFreeBlock = pxIterator->pxNextFreeBlock;              \
+            pxIterator = pxIterator->pxNextFreeBlock;                               \
+            continue;                                                               \
+		}                                                                           \
+        if ((uint8_t *)pxIterator + pxIterator->xBlockSize == (uint8_t *)pxBlock) { \
+            pxIterator->xBlockSize += pxBlock->xBlockSize;                          \
+            pxPrevious->pxNextFreeBlock = pxIterator->pxNextFreeBlock;              \
+            pxBlock = pxIterator;                                                   \
+            pxIterator = pxPrevious->pxNextFreeBlock;                               \
+            continue;                                                               \
+		}                                                                           \
+		pxPrevious = pxIterator;                                                    \
+        pxIterator = pxIterator->pxNextFreeBlock;									\
+	}																				\
                                                                                     \
 	xBlockSize = pxBlock->xBlockSize;										        \
 																					\
